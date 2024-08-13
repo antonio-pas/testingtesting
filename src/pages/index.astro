@@ -1,0 +1,21 @@
+---
+import MyLayout from '../layouts/MyLayout.astro'
+import { db, Todos } from "astro:db"
+if (Astro.request.method === 'POST') {
+  const formData = await Astro.request.formData();
+  const contents = formData.get('contents');
+  if (typeof contents === 'string') {
+    await db.insert(Todos).values({ contents });
+  }
+}
+
+// render the new list of comments on each request
+const comments = await db.select().from(Comment);
+---
+
+<MyLayout title="My Document">
+	<h1>Hello</h1>
+	<form method="POST">
+
+	</form>
+</MyLayout>
