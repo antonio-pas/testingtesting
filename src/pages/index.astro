@@ -3,19 +3,29 @@ import MyLayout from '../layouts/MyLayout.astro'
 import { db, Todos } from "astro:db"
 if (Astro.request.method === 'POST') {
   const formData = await Astro.request.formData();
-  const contents = formData.get('contents');
+  const contents = formData.get('contents').toString();
   if (typeof contents === 'string') {
-    await db.insert(Todos).values({ contents });
+    await db.insert(Todos).values({ contents, completed: false, date: Date.now() });
   }
 }
 
-// render the new list of comments on each request
-const comments = await db.select().from(Comment);
+const todos = await db.select().from(Todos);
 ---
 
 <MyLayout title="My Document">
-	<h1>Hello</h1>
-	<form method="POST">
-
-	</form>
+	<div class="flex flex-col items-center justify-center gap-4 min-h-screen bg-stone-950 text-stone-200">
+    <h1 class="text-2xl font-bold">Today is {new Date().toLocaleDateString('en-us', { weekday: 'long', day: 'numeric', month: 'short'})}</h1>
+    <form method="POST">
+        <input placeholder="Enter text..." class="placeholder:text-stone-700 rounded bg-transparent hover:bg-stone-900 focus:bg-stone-800 px-2 py-1 focus:outline-stone-800 focus:outline-2 outline-offset-4 border-2 border-stone-600" name="contents" type="text">
+        <button class="rounded bg-stone-200 hover:bg-stone-400 transition-colors duration-150 px-4 py-1.5 text-stone-800" type="submit">Submit</button>
+    </form>
+    <ul>
+      {todos.map(e => <li class="flex gap-2" >
+      <input class="border-stone-300 bg-transparent checked:bg-stone-500" type="checkbox" value={e.completed} />
+        <span>
+        {e.contents}
+        </span>
+      </li>)}
+    </ul>
+  </div>
 </MyLayout>

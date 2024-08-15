@@ -1,9 +1,10 @@
-import { defineDb, defineTable, column } from 'astro:db';
+import { defineDb, defineTable, column, NOW } from 'astro:db';
 
 const Todos = defineTable({
   columns: {
-    content: column.text(),
+    contents: column.text(),
     completed: column.boolean(),
+    deadline: column.date({ default: NOW })
   },
 });
 
